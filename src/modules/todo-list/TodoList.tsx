@@ -1,17 +1,19 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { todoListApi } from "./api.ts";
 import { useState } from "react";
 
 export const TodoList = () => {
   const [page, setPage] = useState(1);
+  const [enabled, setEnabled] = useState(false);
 
-  const { data, error, isPending, isPlaceholderData } = useQuery({
+  const { data, error, isLoading, isPlaceholderData } = useQuery({
     queryKey: ["tasks", "list", { page }],
     queryFn: (meta) => todoListApi.getTodoList({ page }, meta),
     placeholderData: keepPreviousData,
+    enabled: enabled,
   });
 
-  if (isPending) {
+  if (isLoading) {
     return <div>Loading</div>;
   }
 
@@ -22,6 +24,7 @@ export const TodoList = () => {
   return (
     <div className="my-10 px-5 mx-auto max-w-[1200]">
       <h1 className="text-3xl font-bold mb-5">To Do List</h1>
+      <button onClick={() => setEnabled((e) => !e)}>Toggle Enabled</button>
       <div
         className={
           "flex flex-col gap-4" + (isPlaceholderData ? " opacity-50" : "")
@@ -42,7 +45,7 @@ export const TodoList = () => {
         </button>
         <button
           className="px-3 py-2 rounded-md border border-orange-400"
-          onClick={() => setPage(Math.min(page + 1, data?.items))}
+          onClick={() => setPage(Math.min(page + 1, data?.items ?? 1))}
         >
           Next
         </button>
