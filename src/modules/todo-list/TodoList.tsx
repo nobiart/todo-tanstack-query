@@ -1,16 +1,29 @@
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { todoListApi } from "./api.ts";
-import { useState } from "react";
+import { useCallback, useState, useRef } from "react";
 
 export const TodoList = () => {
-  const [page, setPage] = useState(1);
   const [enabled, setEnabled] = useState(false);
 
-  const { data, error, isLoading, isPlaceholderData } = useQuery({
-    queryKey: ["tasks", "list", { page }],
-    queryFn: (meta) => todoListApi.getTodoList({ page }, meta),
-    placeholderData: keepPreviousData,
+  const {
+    data,
+    error,
+    isLoading,
+    isPlaceholderData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["tasks", "list"],
+    queryFn: (meta) => todoListApi.getTodoList({ page: meta.pageParam }, meta),
     enabled: enabled,
+    initialPageParam: 1,
+    getNextPageParam: (result) => result.next,
+    select: (result) => result.pages.flatMap((page) => page.data),
+  });
+
+  const cursorRef = useIntersection(() => {
+    fetchNextPage();
   });
 
   if (isLoading) {
@@ -30,26 +43,37 @@ export const TodoList = () => {
           "flex flex-col gap-4" + (isPlaceholderData ? " opacity-50" : "")
         }
       >
-        {data?.data.map((todo) => (
+        {data?.map((todo) => (
           <div key={todo.id} className="p-3 border border-slate-500 rounded-md">
             {todo.text}
           </div>
         ))}
       </div>
-      <div className="flex gap-3 mt-5">
-        <button
-          className="px-3 py-2 rounded-md border border-orange-400"
-          onClick={() => setPage(Math.max(page - 1, 1))}
-        >
-          Prev
-        </button>
-        <button
-          className="px-3 py-2 rounded-md border border-orange-400"
-          onClick={() => setPage(Math.min(page + 1, data?.items ?? 1))}
-        >
-          Next
-        </button>
+      <div className="flex gap-3 mt-5" ref={cursorRef}>
+        {!hasNextPage && <div>No Data for Fetching</div>}
+        {isFetchingNextPage && <div>...Loading</div>}
       </div>
     </div>
   );
+};
+
+export const useIntersection = (onIntersect: () => void) => {
+  const unsubscribe = useRef(() => {});
+
+  return useCallback((el: HTMLDivElement | null) => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((intersection) => {
+        if (intersection.isIntersecting) {
+          onIntersect();
+        }
+      });
+    });
+
+    if (el) {
+      observer.observe(el);
+      unsubscribe.current = () => observer.disconnect();
+    } else {
+      unsubscribe.current();
+    }
+  }, []);
 };
