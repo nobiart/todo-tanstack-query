@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { todoListApi } from "./api.ts";
-import { useCallback, useState, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 
 export const TodoList = () => {
   const [enabled, setEnabled] = useState(false);
@@ -60,20 +60,23 @@ export const TodoList = () => {
 export const useIntersection = (onIntersect: () => void) => {
   const unsubscribe = useRef(() => {});
 
-  return useCallback((el: HTMLDivElement | null) => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((intersection) => {
-        if (intersection.isIntersecting) {
-          onIntersect();
-        }
+  return useCallback(
+    (el: HTMLDivElement | null) => {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((intersection) => {
+          if (intersection.isIntersecting) {
+            onIntersect();
+          }
+        });
       });
-    });
 
-    if (el) {
-      observer.observe(el);
-      unsubscribe.current = () => observer.disconnect();
-    } else {
-      unsubscribe.current();
-    }
-  }, []);
+      if (el) {
+        observer.observe(el);
+        unsubscribe.current = () => observer.disconnect();
+      } else {
+        unsubscribe.current();
+      }
+    },
+    [onIntersect],
+  );
 };
