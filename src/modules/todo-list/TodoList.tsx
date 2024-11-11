@@ -1,9 +1,11 @@
 import { useTodoList } from "./useTodoList.tsx";
 import { useCreateTodo } from "./useCreateTodo.ts";
+import { useDeleteTodo } from "./useDeleteTodo.ts";
 
 export const TodoList = () => {
   const { error, isLoading, todoItems } = useTodoList();
   const createTodo = useCreateTodo();
+  const deleteTodo = useDeleteTodo();
 
   if (isLoading) {
     return <div>Loading</div>;
@@ -33,8 +35,18 @@ export const TodoList = () => {
 
       <div className="flex flex-col gap-4">
         {todoItems?.map((todo) => (
-          <div key={todo.id} className="p-3 border border-slate-500 rounded-md">
+          <div
+            key={todo.id}
+            className="p-3 flex justify-between border border-slate-500 rounded-md"
+          >
             {todo.text}
+            <button
+              className="text-rose-500 disabled:opacity-50"
+              disabled={deleteTodo.getIsPending(todo.id)}
+              onClick={() => deleteTodo.handleDelete(todo.id)}
+            >
+              Delete
+            </button>
           </div>
         ))}
       </div>
