@@ -1,11 +1,13 @@
 import { useTodoList } from "./useTodoList.tsx";
 import { useCreateTodo } from "./useCreateTodo.ts";
 import { useDeleteTodo } from "./useDeleteTodo.ts";
+import { useToggleTodo } from "./useToggleTodo.ts";
 
 export const TodoList = () => {
   const { error, isLoading, todoItems } = useTodoList();
   const createTodo = useCreateTodo();
   const deleteTodo = useDeleteTodo();
+  const { toggleTodo } = useToggleTodo();
 
   if (isLoading) {
     return <div>Loading</div>;
@@ -39,6 +41,11 @@ export const TodoList = () => {
             key={todo.id}
             className="p-3 flex justify-between border border-slate-500 rounded-md"
           >
+            <input
+              type="checkbox"
+              checked={todo.done}
+              onChange={() => toggleTodo(todo.id, todo.done)}
+            />
             {todo.text}
             <button
               className="text-rose-500 disabled:opacity-50"

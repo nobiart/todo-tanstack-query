@@ -12,9 +12,7 @@ export const useCreateTodo = () => {
     //   queryClient.invalidateQueries(todoListApi.getTodoListQueryOptions());
     // },
     async onSettled() {
-      await queryClient.invalidateQueries(
-        todoListApi.getTodoListQueryOptions(),
-      );
+      await queryClient.invalidateQueries({ queryKey: [todoListApi.baseKey] });
     },
   });
 
