@@ -2,12 +2,14 @@ import { useTodoList } from "./useTodoList.tsx";
 import { useCreateTodo } from "./useCreateTodo.ts";
 import { useDeleteTodo } from "./useDeleteTodo.ts";
 import { useToggleTodo } from "./useToggleTodo.ts";
+import { useUser } from "../auth/useUser.ts";
 
 export const TodoList = () => {
   const { error, isLoading, todoItems } = useTodoList();
   const createTodo = useCreateTodo();
   const deleteTodo = useDeleteTodo();
   const { toggleTodo } = useToggleTodo();
+  const userQuery = useUser();
 
   if (isLoading) {
     return <div>Loading</div>;
@@ -19,7 +21,9 @@ export const TodoList = () => {
 
   return (
     <div className="my-10 px-5 mx-auto max-w-[1200]">
-      <h1 className="text-3xl font-bold mb-5">To Do List</h1>
+      <h1 className="text-3xl font-bold mb-5">
+        To Do List {userQuery.data?.login}
+      </h1>
 
       <form className="flex gap-2 mb-5" onSubmit={createTodo.handleCreate}>
         <input

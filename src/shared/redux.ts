@@ -15,7 +15,8 @@ export type AppDispatch = typeof store.dispatch;
 export type AppThunk<R = void> = ThunkAction<
   R,
   AppState,
-  object,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any,
   UnknownAction
 >;
 export const store = configureStore({
@@ -24,6 +25,6 @@ export const store = configureStore({
 });
 
 export const useAppSelector = useSelector.withTypes<AppState>();
-export const useAppDispath = useDispatch.withTypes<AppDispatch>();
+export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 export const useAppStore = useStore.withTypes<typeof store>();
 export const createAppSelector = createSelector.withTypes<AppState>();
