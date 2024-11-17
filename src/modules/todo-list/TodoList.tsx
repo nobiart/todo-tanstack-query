@@ -1,13 +1,14 @@
 import { useTodoList } from "./useTodoList.tsx";
-import { useCreateTodo } from "./useCreateTodo.ts";
 import { useDeleteTodo } from "./useDeleteTodo.ts";
 import { useToggleTodo } from "./useToggleTodo.ts";
 import { useUser } from "../auth/useUser.ts";
+import { useCreateTodo } from "./useCreateTodo.ts";
 
 export const TodoList = () => {
   const { error, isLoading, todoItems } = useTodoList();
-  const createTodo = useCreateTodo();
   const deleteTodo = useDeleteTodo();
+  const createTodo = useCreateTodo();
+  console.log("isLoadingCreate", createTodo.isLoading);
   const { toggleTodo } = useToggleTodo();
   const userQuery = useUser();
 
@@ -32,7 +33,7 @@ export const TodoList = () => {
           name="text"
         />
         <button
-          disabled={createTodo.isPending}
+          disabled={createTodo.isLoading}
           className="rounded p-2 border border-orange-500 bg-orange-500 text-white disabled:opacity-50"
         >
           Add
