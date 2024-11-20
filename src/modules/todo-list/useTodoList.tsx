@@ -6,10 +6,11 @@ export const useTodoList = () => {
     data: todoItems,
     error,
     isLoading,
+    refetch,
   } = useQuery({
     ...todoListApi.getTodoListQueryOptions(),
-    select: (data) => data.toReversed(),
+    select: (data) => [...data].reverse(),
   });
 
-  return { error, todoItems, isLoading };
+  return { error, todoItems, isLoading, refetch };
 };
