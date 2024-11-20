@@ -9,6 +9,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { onlineManager } from "@tanstack/react-query";
+import { Loader } from "./Loader.tsx";
 
 onlineManager.setOnline(navigator.onLine);
 
@@ -29,7 +30,9 @@ createRoot(document.getElementById("root") as HTMLElement).render(
       }}
     >
       <Provider store={store}>
-        <App />
+        <Loader>
+          <App />
+        </Loader>
         <ReactQueryDevtools initialIsOpen={false} />
       </Provider>
     </PersistQueryClientProvider>
